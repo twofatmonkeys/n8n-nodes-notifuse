@@ -123,7 +123,10 @@ export async function notifuseApiRequestAllItems(
 	const usesCursor = endpoint === 'contacts.list';
 
 	if (usesCursor) {
-		// Cursor-based pagination
+		// Cursor-based pagination — always send limit to avoid server panic on small result sets
+		if (!query.limit) {
+			query.limit = 100;
+		}
 		while (hasMore) {
 			const response = await notifuseApiRequest.call(this, method, endpoint, body, query);
 			const items = (response[dataKey] as IDataObject[]) || [];
