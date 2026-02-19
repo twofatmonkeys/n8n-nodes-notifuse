@@ -79,6 +79,14 @@ export const contactFields: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'Include Contact Lists',
+		name: 'withContactLists',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to include contact list subscriptions in the response',
+		displayOptions: { show: { resource: ['contact'], operation: ['list'] } },
+	},
+	{
 		displayName: 'Filters',
 		name: 'filters',
 		type: 'collection',
@@ -143,13 +151,6 @@ export const contactFields: INodeProperties[] = [
 				default: '',
 				description: 'Filter by contact list subscription status',
 			},
-			{
-				displayName: 'With Contact Lists',
-				name: 'with_contact_lists',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to include contact list subscriptions in the response',
-			},
 		],
 	},
 
@@ -186,6 +187,26 @@ export const contactFields: INodeProperties[] = [
 	//         contact: upsert
 	// ------------------------------------------------------------------
 	{
+		displayName: 'Input Mode',
+		name: 'inputMode',
+		type: 'options',
+		default: 'fields',
+		description: 'Whether to use individual fields or a raw JSON object',
+		displayOptions: { show: { resource: ['contact'], operation: ['upsert'] } },
+		options: [
+			{
+				name: 'Fields',
+				value: 'fields',
+				description: 'Set each field individually',
+			},
+			{
+				name: 'JSON',
+				value: 'json',
+				description: 'Pass a JSON object with all contact fields',
+			},
+		],
+	},
+	{
 		displayName: 'Email',
 		name: 'email',
 		type: 'string',
@@ -193,7 +214,20 @@ export const contactFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description: 'The email address of the contact to create or update',
-		displayOptions: { show: { resource: ['contact'], operation: ['upsert'] } },
+		displayOptions: {
+			show: { resource: ['contact'], operation: ['upsert'], inputMode: ['fields'] },
+		},
+	},
+	{
+		displayName: 'Contact (JSON)',
+		name: 'contactJson',
+		type: 'json',
+		required: true,
+		default: '{\n  "email": "user@example.com",\n  "first_name": "John"\n}',
+		description: 'JSON object with contact fields. Must include an "email" field.',
+		displayOptions: {
+			show: { resource: ['contact'], operation: ['upsert'], inputMode: ['json'] },
+		},
 	},
 	{
 		displayName: 'Additional Fields',
@@ -201,7 +235,9 @@ export const contactFields: INodeProperties[] = [
 		type: 'collection',
 		placeholder: 'Add Field',
 		default: {},
-		displayOptions: { show: { resource: ['contact'], operation: ['upsert'] } },
+		displayOptions: {
+			show: { resource: ['contact'], operation: ['upsert'], inputMode: ['fields'] },
+		},
 		options: [
 			{
 				displayName: 'External ID',

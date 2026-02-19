@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-notifuse",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "n8n community node for Notifuse - open-source self-hosted emailing platform",
 	"license": "MIT",
 	"homepage": "https://github.com/Notifuse/n8n-nodes-notifuse",

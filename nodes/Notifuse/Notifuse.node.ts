@@ -155,8 +155,12 @@ async function executeContact(
 ): Promise<IDataObject | IDataObject[]> {
 	if (operation === 'list') {
 		const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+		const withContactLists = this.getNodeParameter('withContactLists', i, false) as boolean;
 		const filters = this.getNodeParameter('filters', i, {}) as IDataObject;
 		const query: IDataObject = { ...filters };
+		if (withContactLists) {
+			query.with_contact_lists = true;
+		}
 
 		if (returnAll) {
 			return await notifuseApiRequestAllItems.call(
@@ -200,9 +204,18 @@ async function executeContact(
 	}
 
 	if (operation === 'upsert') {
-		const email = this.getNodeParameter('email', i) as string;
-		const additionalFields = this.getNodeParameter('additionalFields', i, {}) as IDataObject;
-		const contact: IDataObject = { email, ...additionalFields };
+		const inputMode = this.getNodeParameter('inputMode', i, 'fields') as string;
+		let contact: IDataObject;
+
+		if (inputMode === 'json') {
+			const contactJson = this.getNodeParameter('contactJson', i) as string;
+			contact = typeof contactJson === 'string' ? JSON.parse(contactJson) : contactJson;
+		} else {
+			const email = this.getNodeParameter('email', i) as string;
+			const additionalFields = this.getNodeParameter('additionalFields', i, {}) as IDataObject;
+			contact = { email, ...additionalFields };
+		}
+
 		return await notifuseApiRequest.call(this, 'POST', 'contacts.upsert', { contact });
 	}
 
